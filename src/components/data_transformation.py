@@ -23,11 +23,11 @@ class DataTransformation:
         try:
             numerical_columns = ['DoorsNum', 'Owners', 'Warranty', 'Engine_Size', 'Weight',
        'carlength', 'carwidth', 'monthly_mileage', 'peakrpm',
-       'Estimated_Mileage','Car_Age']
+       'Estimated_Mileage','Car_Age','TAge']
             categorical_columns = ['Model_Brand', 'Model_Type', 'Fuel_Type', 'Transmission', 'Condition', 'Color', 'Cruise',
        'Leather_Seats', 'Heated_Seats', 'Navigation', 'Insurance',
        'Service_History', 'Safety', 'Premium_Sound', 'Multimedia', 'Bluetooth',
-       'Wheel', 'Sunroof', 'TAge', 'Cylinder_Numbers', 'Credit_History']
+       'Wheel', 'Sunroof', 'Cylinder_Numbers', 'Credit_History']
 
             num_pipeline = Pipeline(
                 steps=[

@@ -6,5 +6,6 @@ xgboost
 numpy
 joblib
 flask
-
+catboost
+shap
 -e .

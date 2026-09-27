@@ -39,9 +39,12 @@ class DataIngestion:
             df['Insurance'] = df['Insurance'].replace({'3rd Party': 'Third Party', 'No': 'No insurance'})
             df['Service_History'] = df['Service_History'].replace({'Full ': 'Full Service', 'Partial ': 'Partial Service'})
             df['Safety'] = df['Safety'].replace({'4': '4 stars'})
-            df['TAge'] = df['TAge'].replace({'4 years': '4', '50': '5'})
+            df['TAge'] = df['TAge'].replace({'4 years': 4, '50': 5})
             df['Cylinder_Numbers'] = df['Cylinder_Numbers'].replace({'3': 'three', '4': 'four', '5': 'five'})
+            df['Owners'] = df['Owners'].replace({44:4,22:2})
             # Categorize Credit_History
+            df['Credit_History'] = pd.to_numeric(df['Credit_History'],errors='coerce')
+            df['TAge'] = pd.to_numeric(df['TAge'],errors='coerce')
             def categorize_credit(x):
              if x < -0.01:
                  return "Poor"
@@ -49,7 +52,18 @@ class DataIngestion:
               return "Fair"
              else:
               return "Good"
-
+            def doors_num(y):
+              if y >= 20:
+                return y/10
+              else:
+                return y
+            def engine_size(z):
+                if z >= 100:
+                    return z/100
+                else:
+                    return z
+            df['DoorsNum'] = df['DoorsNum'].apply(doors_num)
+            df['Engine_Size'] = df['Engine_Size'].apply(engine_size)
             df['Credit_History'] = df['Credit_History'].apply(categorize_credit)
             #Feature Engineering
             df['Car_Age']= 2025-df['Year']
@@ -86,9 +100,11 @@ if __name__ == "__main__":
     train_array, test_array, preprocessor = data_transformation.initiate_data_transformation(train_data, test_data)
 
     model_trainer = ModelTrainer()
-    r2_score, rmse, top_models = model_trainer.initiate_model_trainer(train_array, test_array)
-    print(f"\nBest Model R2 Score: {r2_score:.4f}")
-    print(f"Best Model RMSE: {rmse:,.2f}")
-    print("\nTop 3 Models:")
-    for i, (name, (r2, rmse)) in enumerate(top_models, 1):
+    voting_r2, voting_rmse, tuned_scores = model_trainer.initiate_model_trainer(train_array, test_array)
+
+    print(f"\nVotingRegressor R2 Score: {voting_r2:.4f}")
+    print(f"VotingRegressor RMSE: {voting_rmse:,.2f}")
+
+    print("\nTop 3 tuned models used in the vote:")
+    for i, (name, r2, rmse) in enumerate(tuned_scores, 1):
         print(f" #{i} {name}: R2 = {r2:.4f} | RMSE = {rmse:,.2f}")

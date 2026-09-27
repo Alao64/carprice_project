@@ -1,6 +1,8 @@
 import os
 import sys
 import joblib
+import shap
+import numpy as np
 import pandas as pd
 from src.exception import CustomException
 from src.logger import logging
@@ -21,6 +23,34 @@ class PredictPipeline:
             data_scaled = preprocessor.transform(features)
             preds = model.predict(data_scaled)
             return preds
+
+        except Exception as e:
+            raise CustomException(e, sys)
+
+    def explain(self, features):
+        """SHAP values for one row, using the best individual tree model."""
+        try:
+            model_path = os.path.join("artifacts", "best_individual_model.pkl")
+            preprocessor_path = os.path.join("artifacts", "preprocessor.pkl")
+
+            model = joblib.load(model_path)
+            preprocessor = joblib.load(preprocessor_path)
+
+            data_scaled = preprocessor.transform(features)
+            if hasattr(data_scaled, "toarray"):
+                data_scaled = data_scaled.toarray()
+
+            feature_names = preprocessor.get_feature_names_out()
+
+            explainer = shap.TreeExplainer(model)
+            shap_values = explainer.shap_values(data_scaled)
+
+            base_value = explainer.expected_value
+            if isinstance(base_value, (list, np.ndarray)):
+                base_value = base_value[0]
+            base_value = float(base_value)
+
+            return shap_values[0], feature_names, base_value
 
         except Exception as e:
             raise CustomException(e, sys)
