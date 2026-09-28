@@ -4,6 +4,8 @@ import numpy as np
 import shap
 import matplotlib.pyplot as plt
 from src.pipeline.predict_pipeline import CustomData, PredictPipeline
+import sklearn
+st.sidebar.caption(f"sklearn version: {sklearn.__version__}")
 
 st.set_page_config(page_title="Car Price Predictor", page_icon="🚗", layout="wide")
 
